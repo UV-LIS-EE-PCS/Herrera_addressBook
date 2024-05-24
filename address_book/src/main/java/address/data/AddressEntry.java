@@ -11,11 +11,10 @@ public class AddressEntry {
     private String email;
     private String phoneNumber;
 
-    AddressEntry()
+    public AddressEntry()
     {
-
     }
-    AddressEntry(String firstName, String lastName, String street, String city, String state, String postalCode, String email, String phoneNumber)
+    public AddressEntry(String firstName, String lastName, String street, String city, String state, String postalCode, String email, String phoneNumber)
     {
         this.firstName = firstName;
         this.lastName = lastName;

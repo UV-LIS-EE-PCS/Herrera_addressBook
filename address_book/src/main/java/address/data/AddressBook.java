@@ -10,19 +10,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
-
+/*
+ ¿Dónde debo guardar cada cambio? ¿Tengo que reescribir todo el código?
+ */
 import com.googlecode.lanterna.gui2.table.Table; //Dependencia lanterna: https://github.com/mabe02/lanterna/tree/master
 import com.googlecode.lanterna.terminal.swing.TerminalScrollController.Null;
  
 public class AddressBook {
     private ArrayList<AddressEntry> AddressEntryList = new ArrayList<>() ;
-
-    AddressBook()
-    {
-
-    } 
+    // exportar algún archivo
     
-    public void addAddressFromFile()
+    public void addAddressFromFile() // verificar que no sean repetidos
     {
         FileDialog fileDialog = new FileDialog(new Frame(), "Selecciona el archivo con los datos.");
         fileDialog.setVisible(true);
@@ -88,7 +86,7 @@ public class AddressBook {
             ) ;
     }
 
-    public void readAllAddress()
+    public void showAllAddress()
     {
         Table<String> tableAddress = new Table<String>("Número", "Full Name", "Address", "Email", "Phone Number");
         int index = 1;
@@ -109,7 +107,7 @@ public class AddressBook {
     public ArrayList<Integer> searchAddress(String action)
     {
         Scanner input = new Scanner(System.in);
-        System.out.println("Ingrese algún parámetro del contacto que desea " + action);
+        System.out.println("Ingrese algún campo del contacto que desea " + action);
         
         switch (action) {
             case "eliminar":
@@ -197,12 +195,14 @@ public class AddressBook {
                             AddressEntryList.remove(Integer.parseInt(indexAddress));
 
                     }
-                    else
+                    else if(optionAnswered.size() == 0)
                     {
                         Collections.sort(addressFound, Comparator.reverseOrder());
                         for(Integer indexAddress : addressFound)
                             AddressEntryList.remove(indexAddress);
                     }
+                    else 
+                        System.out.println("No se encontraron contactos.");
                     break;
 
                 case "n":
