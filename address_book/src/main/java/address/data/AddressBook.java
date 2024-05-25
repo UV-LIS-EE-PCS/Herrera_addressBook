@@ -1,77 +1,72 @@
 package address.data;
 
-import java.awt.FileDialog;
-import java.awt.Frame;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.nio.Buffer;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.util.regex.Pattern;
+
 /*
  ¿Dónde debo guardar cada cambio? ¿Tengo que reescribir todo el código?
  */
 import com.googlecode.lanterna.gui2.table.Table; //Dependencia lanterna: https://github.com/mabe02/lanterna/tree/master
-import com.googlecode.lanterna.terminal.swing.TerminalScrollController.Null;
+
+import tools.Colors;
+import tools.LoadAddressFile;
  
 public class AddressBook {
     private ArrayList<AddressEntry> AddressEntryList = new ArrayList<>() ;
     // exportar algún archivo
-    
+    private static final String EMAIL_PATTERN = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+    private static final String FULL_NAME_PATTERN = "^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\\s[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+)?$";
+    private static final String ADDRESS_PATTERN = "^[a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ.,\\s#]*$";
+    private static final String POSTAL_CODE_PATTERN = "^\\d{5}(?:[-\\s]\\d{4})?$";
+    private static final String PHONE_NUMBER_PATTERN = "^(?:\\+\\d{1,3})?\\d{10}$";
+
+
     public void addAddressFromFile() // verificar que no sean repetidos
     {
-        FileDialog fileDialog = new FileDialog(new Frame(), "Selecciona el archivo con los datos.");
-        fileDialog.setVisible(true);
-        String fileName = fileDialog.getFile() ;
-        if(fileName != null)
-        {
-            String directory = fileDialog.getDirectory() ;
-            try 
-            {
-                File importFile = new File(directory) ;
-                Scanner scannerFile = new Scanner(importFile) ;
-                while(scannerFile.hasNextLine())
-                {
-                    AddressEntry addressEntryFile = new AddressEntry() ;
-                    if(addressEntryFile.getFirstName() == null || addressEntryFile.getFirstName().isEmpty())
-                        addressEntryFile.setFirstName(scannerFile.nextLine());
-                    else if(addressEntryFile.getLastName() == null || addressEntryFile.getLastName().isEmpty())
-                        addressEntryFile.setLastName(scannerFile.nextLine());
-                    else if(addressEntryFile.getStreet() == null || addressEntryFile.getStreet().isEmpty())
-                        addressEntryFile.setStreet(scannerFile.nextLine());
-                    else if(addressEntryFile.getCity() == null || addressEntryFile.getCity().isEmpty())
-                        addressEntryFile.setCity(scannerFile.nextLine());
-                    else if(addressEntryFile.getState() == null || addressEntryFile.getState().isEmpty())
-                        addressEntryFile.setState(scannerFile.nextLine());
-                    else if(addressEntryFile.getPostalCode() == null || addressEntryFile.getPostalCode().isEmpty())
-                        addressEntryFile.setPostalCode(scannerFile.nextLine());
-                    else if(addressEntryFile.getEmail() == null || addressEntryFile.getEmail().isEmpty())
-                        addressEntryFile.setEmail(scannerFile.nextLine());
-                   
-                    else if(addressEntryFile.getPhoneNumber() == null)
-                    {
-                        addressEntryFile.setPhoneNumber(scannerFile.nextLine());
-                        AddressEntryList.add(addressEntryFile);
-                        addressEntryFile = null ;
-                    }
-                    
-                }
+        
+        String  filePath = LoadAddressFile.loadFileFromExplorer(".txt") ;
 
-            }
-            catch (Exception e) 
-            {
-                // TODO: handle exception
+        if(!filePath.contains("null") || filePath.isEmpty())
+        {
+            try {
+                File importFile = new File(filePath) ;
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        new FileInputStream(importFile), "UTF-8"))) {
+                    AddressEntry addressEntryFile = new AddressEntry();
+                    String line ;
+                    while((line = reader.readLine()) != null)
+                    {
+                        LoadAddressFile.fillAddressEntry(addressEntryFile, line);
+
+                        if(LoadAddressFile.isAddressComplete(addressEntryFile))
+                        {
+                            AddressEntryList.add(addressEntryFile);
+                            addressEntryFile = new AddressEntry();
+                        }
+                    }
+                    System.out.println(Colors.ANSI_GREEN + "[Archivo importado correctamente]" + Colors.ANSI_RESET + "\n" + filePath);
+                } 
+            } 
+            catch (Exception e) {
+                System.err.println(Colors.ANSI_RED + "[Archivo no encontrado] " +  Colors.ANSI_RESET + e.getMessage() );
             }
         }
+         
     }
-    public void addAddress(AddressEntry addressEntry)
-    {
+    public void addAddress()
+    {   
+        AddressEntry addressEntry = readEntry() ;
         if(validationAddressEntry(addressEntry) == true)
-            AddressEntryList.add(readEntry());
+            AddressEntryList.add(addressEntry);
         else
-            ;
+            System.err.println(Colors.ANSI_RED + "[Parámetros inválidos] " + Colors.ANSI_RESET + "Algún campo no cumple con el formato adecuado.");
     }
 
     public void readAddress(int index)
@@ -88,62 +83,65 @@ public class AddressBook {
 
     public void showAllAddress()
     {
-        Table<String> tableAddress = new Table<String>("Número", "Full Name", "Address", "Email", "Phone Number");
-        int index = 1;
-        for(AddressEntry addressEntry : AddressEntryList)
+        System.out.println(Colors.ANSI_CYAN + "Número\tFull Name\tAddress\tEmail\tPhone Number" + Colors.ANSI_RESET);
+        if(AddressEntryList.size() > 0)
         {
-            tableAddress.getTableModel().addRow(
-                String.valueOf(index),
-                addressEntry.getFirstName() + ' ' +  addressEntry.getLastName(),
-                addressEntry.getStreet() + '\n' + addressEntry.getCity() + ", " + addressEntry.getState() + ' ' + addressEntry.getPostalCode(),
-                addressEntry.getEmail(),
-                addressEntry.getPhoneNumber()
-            ) ;
-            index ++;
+            int index = 1;
+            for(AddressEntry addressEntry : AddressEntryList)
+            {
+                System.out.println(
+                    index + "\t" +
+                    addressEntry.getFirstName() + ' ' + addressEntry.getLastName() + "\t" +
+                    addressEntry.getStreet() + '\n' + addressEntry.getCity() + ", " + addressEntry.getState() + ' ' + addressEntry.getPostalCode() + "\t" +
+                    addressEntry.getEmail() + "\t" +
+                    addressEntry.getPhoneNumber()
+                );
+                index ++;
+            }
         }
+        else 
+            System.out.println("No hay resultados que mostrar.");
     }
 
 
     public ArrayList<Integer> searchAddress(String action)
     {
         Scanner input = new Scanner(System.in);
-        System.out.println("Ingrese algún campo del contacto que desea " + action);
+        System.out.print("Ingrese algún campo del contacto que desea ");
         
         switch (action) {
             case "eliminar":
-                //rojo
+                System.out.println(Colors.ANSI_RED + action + Colors.ANSI_RESET); 
                 break;
             case "editar":
-                //verde a azul
+                System.out.println(Colors.ANSI_GREEN + action + Colors.ANSI_RESET); 
                 break;
             case "buscar":
-                //?
+                System.out.println(Colors.ANSI_BLUE + action + Colors.ANSI_RESET); 
                 break;
             default:
+                System.out.println(action);
                 break;
         }
-        String searchString = input.nextLine() ;
-        //resetColor();
+        String searchString = input.nextLine() ; // Agregar coincidencia
 
-
-        Table<String> tableAddress = new Table<String>("Número", "Full Name", "Address", "Email", "Phone Number");
         ArrayList<Integer> addressFound = new ArrayList<>() ;
         int index = 0;
+        
         for(AddressEntry addressEntry : AddressEntryList)
         {
             if(addressEntry.toString().contains(searchString))
             {
-                tableAddress.getTableModel().addRow(
-                    String.valueOf(index + 1),
-                    addressEntry.getFirstName() + ' ' +  addressEntry.getLastName(),
-                    addressEntry.getStreet() + '\n' + addressEntry.getCity() + ", " + addressEntry.getState() + ' ' + addressEntry.getPostalCode(),
-                    addressEntry.getEmail(),
-                    addressEntry.getPhoneNumber()                    
-                ) ;
+                System.out.println(
+                    index + "\t" +
+                    addressEntry.getFirstName() + ' ' + addressEntry.getLastName() + "\t" +
+                    addressEntry.getStreet() + '\n' + addressEntry.getCity() + ", " + addressEntry.getState() + ' ' + addressEntry.getPostalCode() + "\t" +
+                    addressEntry.getEmail() + "\t" +
+                    addressEntry.getPhoneNumber()
+                );
                 addressFound.add((Integer)index) ;
-                index++ ;
-            }
-            
+                index ++;
+            }  
         }
 
         return addressFound ;
@@ -174,46 +172,52 @@ public class AddressBook {
     public void deleteAddress()
     {
         Scanner input = new Scanner(System.in) ;
-        ArrayList<Integer>addressFound = searchAddress("Eliminar") ;
-        
-        System.out.println("Ingresar 'y' eliminará todos los registros.");
-        System.out.println("Ingresar 'y [número] [número_2]' eliminará los registros seleccionados.");
-        System.out.println("Ingresar 'n' lo regresará al menú.");
+        ArrayList<Integer>addressFound = searchAddress("eliminar") ;
+        if(addressFound.size() > 1)
+        {
+            System.out.println("Ingresar 'y' eliminará todos los registros.");
+            System.out.println("Ingresar 'y [número] [número_2]' eliminará los registros seleccionados.");
+            System.out.println("Ingresar 'n' lo regresará al menú.");
 
-        ArrayList<String> optionAnswered = new ArrayList<>();
-        Collections.addAll(optionAnswered, input.nextLine().split(" "));
+            ArrayList<String> optionAnswered = new ArrayList<>();
+            Collections.addAll(optionAnswered, input.nextLine().split(" "));
 
-        
-        try {
-            switch (optionAnswered.get(0)) {
-                case "y":
-                    if(optionAnswered.size() > 1)
-                    {
-                        optionAnswered.remove(0);
-                        Collections.sort(optionAnswered, Comparator.reverseOrder());
-                        for(String indexAddress : optionAnswered)
-                            AddressEntryList.remove(Integer.parseInt(indexAddress));
+            
+            try {
+                switch (optionAnswered.get(0)) {
+                    case "y":
+                        if(optionAnswered.size() > 1)
+                        {
+                            optionAnswered.remove(0);
+                            Collections.sort(optionAnswered, Comparator.reverseOrder());
+                            for(String indexAddress : optionAnswered)
+                                AddressEntryList.remove(Integer.parseInt(indexAddress));
 
-                    }
-                    else if(optionAnswered.size() == 0)
-                    {
-                        Collections.sort(addressFound, Comparator.reverseOrder());
-                        for(Integer indexAddress : addressFound)
-                            AddressEntryList.remove(indexAddress);
-                    }
-                    else 
-                        System.out.println("No se encontraron contactos.");
-                    break;
+                        }
+                        else if(optionAnswered.size() == 1)
+                        {
+                           
+                            Collections.sort(addressFound, Comparator.reverseOrder());
+                            for(Integer indexAddress : addressFound)
+                            {
+                                AddressEntryList.remove((int)indexAddress);
+                                System.out.println(indexAddress);
+                            }
+                            System.out.println(AddressEntryList.size());
+                        }
+                        break;
+                    case "n":
+                        return ;
+                    default:
+                        break;
+                }
 
-                case "n":
-                    return ;
-                default:
-                    break;
+            } catch (Exception e) {
+                // TODO: handle exception
             }
-
-        } catch (Exception e) {
-            // TODO: handle exception
         }
+        else
+            System.out.println("No hay resultados que mostrar.");
     }
 
     public void findAddress()
@@ -223,18 +227,26 @@ public class AddressBook {
     //considerar espacios y esas jaladas de acento, el .com y @, usar regex para eso.
     public boolean validationAddressEntry(AddressEntry addressEntry)
     {
-        if(addressEntry.getFirstName().length() < 1 && addressEntry.getLastName().length() < 1 && addressEntry.getStreet().length() < 1 && 
-        addressEntry.getCity().length() < 1 && addressEntry.getState().length() < 1 && addressEntry.getPostalCode().length() < 1 &&
-        addressEntry.getEmail().length() < 1 && addressEntry.getPhoneNumber().length() < 1)
+        if(addressEntry.getFirstName().length() < 1 || addressEntry.getLastName().length() < 1 || addressEntry.getStreet().length() < 1 && 
+        addressEntry.getCity().length() < 1 || addressEntry.getState().length() < 1 || addressEntry.getPostalCode().length() < 1 &&
+        addressEntry.getEmail().length() < 1 || addressEntry.getPhoneNumber().length() < 1)
             return false;
-        for(char elementOfName : addressEntry.getFirstName().toCharArray())
-            if( elementOfName < 'A' || (elementOfName > 'Z' && elementOfName < 'a') || elementOfName < 'z')
-                return false;
-        
-        for(char elementOfLastName : addressEntry.getLastName().toCharArray())
-            if( elementOfLastName < 'A' || (elementOfLastName > 'Z' && elementOfLastName < 'a') || elementOfLastName < 'z')
-                return false;
-
+            if (!Pattern.matches(FULL_NAME_PATTERN, addressEntry.getFirstName())) 
+               {System.out.print(1);return false;}
+            if (!Pattern.matches(FULL_NAME_PATTERN, addressEntry.getLastName())) 
+            {System.out.print(2);return false;}
+            if (!Pattern.matches(ADDRESS_PATTERN, addressEntry.getStreet())) 
+            {System.out.print(3);return false;}
+            if (!Pattern.matches(ADDRESS_PATTERN, addressEntry.getCity())) 
+            {System.out.print(4);return false;}
+            if (!Pattern.matches(ADDRESS_PATTERN, addressEntry.getState())) 
+            {System.out.print(5);return false;}
+            if (!Pattern.matches(POSTAL_CODE_PATTERN, addressEntry.getPostalCode())) 
+            {System.out.print(6);return false;}
+            if (!Pattern.matches(EMAIL_PATTERN, addressEntry.getEmail())) 
+            {System.out.print(7);return false;}
+            if (!Pattern.matches(PHONE_NUMBER_PATTERN, addressEntry.getPhoneNumber())) 
+            {System.out.print(8);return false;}
         return true;
     }
 

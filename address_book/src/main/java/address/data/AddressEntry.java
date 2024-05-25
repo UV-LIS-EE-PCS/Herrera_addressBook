@@ -11,7 +11,7 @@ public class AddressEntry {
     private String email;
     private String phoneNumber;
 
-    public AddressEntry()
+    public AddressEntry() // ¿Agregaré parámetros nulos por defecto?
     {
     }
     public AddressEntry(String firstName, String lastName, String street, String city, String state, String postalCode, String email, String phoneNumber)

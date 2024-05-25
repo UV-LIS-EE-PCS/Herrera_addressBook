@@ -26,7 +26,7 @@ public class Menu {
     public void displayMenu()
     {
         String option ;
-        do
+        while(true)
         {
             optionsList.displayOptions();
             option = input.nextLine();
@@ -36,7 +36,7 @@ public class Menu {
                 System.out.println("Entrada inválida.");
             
             
-        }while(!option.equals("f"));
+        }
     }
   
     private void loadFile()
@@ -46,29 +46,11 @@ public class Menu {
     }
     private void addAddress()
     {
-        AddressEntry addressEntry = new AddressEntry();
-        System.out.println("Nombre:");
-        addressEntry.setFirstName(input.nextLine());
-        System.out.println("Apellido:");
-        addressEntry.setLastName(input.nextLine());
-        System.out.println("Calle:");
-        addressEntry.setStreet(input.nextLine());
-        System.out.println("Ciudad:");
-        addressEntry.setCity(input.nextLine());
-        System.out.println("Estado:");
-        addressEntry.setState(input.nextLine());
-        System.out.println("CP:");
-        addressEntry.setPostalCode(input.nextLine());
-        System.out.println("Email:");
-        addressEntry.setEmail(input.nextLine());
-        System.out.println("Teléfono:");
-        addressEntry.setPhoneNumber(input.nextLine());
-
-        addressList.addAddress(addressEntry);
+        System.out.println("Ingresa los datos del contacto.");
+        addressList.addAddress();
     }
     private void deleteAddress()
     {
-        System.out.println("Ingresa algún campo del contacto a eliminar");
         addressList.deleteAddress();
     }
     private void searchAddress()
@@ -77,7 +59,7 @@ public class Menu {
     }
     private void showAllAddress()
     {
-
+        System.out.println("Direcciones guardadas:");
         addressList.showAllAddress() ;
     }
     private void exitMenu()
