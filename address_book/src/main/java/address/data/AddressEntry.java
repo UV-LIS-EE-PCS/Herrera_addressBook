@@ -1,6 +1,6 @@
 package address.data;
 
-public class AddressEntry {
+public class AddressEntry implements Comparable<AddressEntry>{
     
     private String firstName;
     private String lastName;
@@ -88,4 +88,9 @@ public class AddressEntry {
         this.phoneNumber = phoneNumber;
     }
 
+   @Override
+   public int compareTo(AddressEntry other){
+
+        return this.toString().compareToIgnoreCase(other.toString());
+   }
 }

@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 import address.data.AddressBook;
 import address.data.AddressEntry;
+import tools.Colors;
 import tools.Option;
 import tools.OptionsList;
 
@@ -46,7 +47,7 @@ public class Menu {
     }
     private void addAddress()
     {
-        System.out.println("Ingresa los datos del contacto.");
+        System.out.println(Colors.ANSI_PURPLE + "Ingresa los datos del contacto." + Colors.ANSI_RESET);
         addressList.addAddress();
     }
     private void deleteAddress()
@@ -59,7 +60,7 @@ public class Menu {
     }
     private void showAllAddress()
     {
-        System.out.println("Direcciones guardadas:");
+        System.out.println(Colors.ANSI_CYAN + "Direcciones guardadas:" + Colors.ANSI_RESET);
         addressList.showAllAddress() ;
     }
     private void exitMenu()
