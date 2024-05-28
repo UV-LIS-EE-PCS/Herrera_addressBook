@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,11 +18,16 @@ import java.util.Scanner;
 import tools.Colors;
 import tools.LoadAddressFile;
 import tools.SortedArrayListAddress;
- 
+ // Permitir las entradas con acentos.
 public class AddressBook {
     private ArrayList<AddressEntry> AddressEntryList = new ArrayList<>() ;
-    
+    public static String pathAdressBook  = Paths.get( "address_book/src/main/java/info/AddressBook.txt").toString();
 
+   public AddressBook()
+   {
+        addAddressFromFileDefault();
+   }
+    
     public void addAddressFromFile() 
     {
         
@@ -63,6 +70,41 @@ public class AddressBook {
         else
             System.err.println(Colors.ANSI_RED + "[Operación cancelada] " +  Colors.ANSI_RESET );
     }
+    public void addAddressFromFileDefault() 
+    {        
+        try {
+            File importFile = new File(pathAdressBook) ;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                new FileInputStream(importFile), "UTF-8"))) {
+                AddressEntry addressEntryFile = new AddressEntry();
+                String line ;
+                while((line = reader.readLine()) != null)
+                {
+                    LoadAddressFile.fillAddressEntry(addressEntryFile, line);
+                    if(LoadAddressFile.isAddressComplete(addressEntryFile))
+                    {         
+                        if(validationAddressEntry(addressEntryFile))
+                        {
+                            if(Collections.binarySearch(AddressEntryList, addressEntryFile) < 0)    
+                                SortedArrayListAddress.addOrder(AddressEntryList, addressEntryFile); 
+                            else 
+                                System.out.println( Colors.ANSI_YELLOW + "¡Este contacto ya existe! " + Colors.ANSI_RESET +addressEntryFile.toString());
+                        }
+                        else 
+                            System.err.println(Colors.ANSI_RED + "[Parámetro inválido] " + Colors.ANSI_RESET + "Algún campo no cumple con el formato adecuado. " + addressEntryFile.toString());   
+                            addressEntryFile = new AddressEntry();
+                    }
+                        
+                }
+                System.out.println(Colors.ANSI_GREEN + "[AddressBook importado] " + Colors.ANSI_RESET + "Se importaron correctamente las direcciones.");
+            } 
+        } 
+        catch (Exception e) {
+            System.err.println(Colors.ANSI_RED + "[Archivo no encontrado] " +  Colors.ANSI_RESET + e.getMessage() );
+        }
+        
+     
+    }
     public void addAddress()
     {   
         AddressEntry addressEntry = readAddressEntry() ;
@@ -70,7 +112,10 @@ public class AddressBook {
         if(validationAddressEntry(addressEntry) == true)
         {
             if(Collections.binarySearch(AddressEntryList, addressEntry) < 0)    
-                SortedArrayListAddress.addOrder(AddressEntryList, addressEntry); 
+            {
+                SortedArrayListAddress.addOrder(AddressEntryList, addressEntry);
+                LoadAddressFile.saveAfterAdd(addressEntry); 
+            }
             else 
                 System.out.println( Colors.ANSI_YELLOW + "¡Este contacto ya existe! " + Colors.ANSI_RESET +addressEntry.toString());
         }       
@@ -169,8 +214,11 @@ public class AddressBook {
                         Collections.sort(optionAnswered, Comparator.reverseOrder());
                         for(String indexAddress : optionAnswered)
                         {
-                            if(Integer.parseInt(indexAddress) <= AddressEntryList.size() - 1)                        
+                            if(Integer.parseInt(indexAddress) <= AddressEntryList.size() - 1){                       
+                                
+                                LoadAddressFile.saveAfterDelete(AddressEntryList.get(Integer.parseInt(indexAddress)));
                                 AddressEntryList.remove(Integer.parseInt(indexAddress));
+                            }
                             else 
                                 System.err.println(Colors.ANSI_RED + "[Parámetro inválido] " + Colors.ANSI_RESET + indexAddress + " ¡No pertenece a ningún registro!");   
                         }
@@ -178,8 +226,10 @@ public class AddressBook {
                     else if(optionAnswered.size() == 1)
                     {                           
                         Collections.sort(addressFound, Comparator.reverseOrder());
-                        for(Integer indexAddress : addressFound)
-                            AddressEntryList.remove((int)indexAddress);
+                        for(Integer indexAddress : addressFound){
+                            LoadAddressFile.saveAfterDelete(AddressEntryList.get((int)(indexAddress))); 
+                            AddressEntryList.remove((int)indexAddress);   
+                        }
                     }
                     break;
                 default:

@@ -2,7 +2,6 @@ package address;
 import java.util.Scanner;
 
 import address.data.AddressBook;
-import address.data.AddressEntry;
 import tools.Colors;
 import tools.Option;
 import tools.OptionsList;
