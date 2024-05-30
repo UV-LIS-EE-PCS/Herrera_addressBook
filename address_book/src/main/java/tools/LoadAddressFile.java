@@ -15,7 +15,6 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import address.data.AddressBook;
 import address.data.AddressEntry;
@@ -68,7 +67,7 @@ public class LoadAddressFile {
     }
 
     public static void saveAfterDelete(AddressEntry addressEntryDelete) {
-        Path filePath = Paths.get(AddressBook.pathAdressBook);
+        Path filePath = Paths.get(AddressBook.PATH_ADDRESS_BOOK);
         System.out.println(addressEntryDelete.toString());
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath.toFile()), "UTF-8"))) {
@@ -90,9 +89,9 @@ public class LoadAddressFile {
                 if(!isFoundDeletedAddres) indexOfFile ++;
             }
             indexOfFile -= 7;
-            System.out.println(indexOfFile);
             for(int c = 0 ;  c < numberOfAddressEntryParameters; c++)
                 dataOfFile.remove(indexOfFile) ;
+                
             
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath.toFile()), "UTF-8"))) {  
                 for (int c = 0 ; c < dataOfFile.size() ; c++) {
@@ -100,10 +99,10 @@ public class LoadAddressFile {
                     writer.newLine();
                 }
             } catch (IOException e) {
-                System.err.println("[Error al escribir en el archivo] " + e.getMessage());
+                System.err.println(Colors.ANSI_RED + "[Error al escribir en el archivo] " + e.getMessage() + Colors.ANSI_RESET);
             }
         } catch (IOException e) {
-            System.err.println("[Error al manipular el archivo] " + e.getMessage());
+            System.err.println(Colors.ANSI_RED + "[Error al manipular el archivo] " + e.getMessage() + Colors.ANSI_RESET);
             return;
         }   
     }
@@ -113,12 +112,12 @@ public class LoadAddressFile {
             writeAddressInFileDefault(addressEntryAdd);
         }
         catch (Exception e) {
-            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+            System.err.println(Colors.ANSI_RED +"Error al escribir en el archivo: " + e.getMessage() + Colors.ANSI_RESET);
         }
     }
-
+// acentos al escribir
     public static void writeAddressInFileDefault(AddressEntry addressEntry){
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(AddressBook.pathAdressBook, true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(AddressBook.PATH_ADDRESS_BOOK, true))) {
             
             writer.write(addressEntry.getFirstName()); writer.newLine();
             writer.write(addressEntry.getLastName()); writer.newLine();

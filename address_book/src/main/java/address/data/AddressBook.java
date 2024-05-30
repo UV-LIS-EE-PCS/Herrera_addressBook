@@ -11,18 +11,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
 
-/*
- ¿Dónde debo guardar cada cambio? ¿Tengo que reescribir todo el código?
- */
-
 import tools.Colors;
 import tools.LoadAddressFile;
 import tools.SortedArrayListAddress;
- // Permitir las entradas con acentos.
+ 
 public class AddressBook {
-    private ArrayList<AddressEntry> AddressEntryList = new ArrayList<>() ;
-    public static String pathAdressBook  = Paths.get( "address_book/src/main/java/info/AddressBook.txt").toString();
 
+    private ArrayList<AddressEntry> AddressEntryList = new ArrayList<>() ;
+    public static final String PATH_ADDRESS_BOOK  = Paths.get( "address_book/src/main/java/info/AddressBook.txt").toString();
+    
    public AddressBook()
    {
         addAddressFromFileDefault();
@@ -73,7 +70,7 @@ public class AddressBook {
     public void addAddressFromFileDefault() 
     {        
         try {
-            File importFile = new File(pathAdressBook) ;
+            File importFile = new File(PATH_ADDRESS_BOOK) ;
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                 new FileInputStream(importFile), "UTF-8"))) {
                 AddressEntry addressEntryFile = new AddressEntry();
