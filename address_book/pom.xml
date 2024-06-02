@@ -29,11 +29,12 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>address.AddressBookApplication</mainClass> <!-- Reemplaza com.example.Main con tu clase principal -->
+                            <mainClass>address.AddressBookApplication</mainClass> 
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
+            
         </plugins>
     </build>
 </project>

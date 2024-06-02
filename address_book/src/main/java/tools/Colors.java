@@ -11,6 +11,7 @@ public class Colors {
     public static final String ANSI_BLUE = "\u001B[38;2;32;155;255m";
     public static final String ANSI_PURPLE = "\u001B[38;2;122;83;179m";
     public static final String ANSI_WHITE = "\u001B[38;2;255;255;255m";
+    public static final String ANSI_RED = "\u001B[38;2;255;0;0m";
 
     public static final String BG_RED = "\u001B[48;2;255;0;0m"; 
 

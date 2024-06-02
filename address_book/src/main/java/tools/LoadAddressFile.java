@@ -4,17 +4,14 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import address.data.AddressBook;
 import address.data.AddressEntry;
@@ -22,7 +19,7 @@ import address.data.AddressEntry;
 public class LoadAddressFile {
     
     private static final int NUMBER_OF_ADDRESS_ENTRY_PARAMETERS = 8 ;
-    private static final String CHARACTER_ENCODING = "UTF-8" ;
+    public static final String PATH_ADDRESS_BOOK  = "address_book/src/main/resources/AddressBook.txt" ;
 
     public static String loadFileFromExplorer(){
         FileDialog fileDialog = new FileDialog(new Frame(), "Selecciona el archivo de direcciones.", FileDialog.LOAD); 
@@ -70,10 +67,8 @@ public class LoadAddressFile {
     }
 
     public static void saveAfterDelete(AddressEntry addressEntryDelete){
-        Path filePath = Paths.get(AddressBook.PATH_ADDRESS_BOOK);
-        System.out.println(addressEntryDelete.toString());
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath.toFile()), CHARACTER_ENCODING))) {
+        Path path = Paths.get(PATH_ADDRESS_BOOK);
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line;
             int indexOfFile  = 0;
             boolean isFoundDeletedAddress = false;
@@ -94,9 +89,8 @@ public class LoadAddressFile {
             indexOfFile -= NUMBER_OF_ADDRESS_ENTRY_PARAMETERS - 1;
             for(int c = 0 ;  c < NUMBER_OF_ADDRESS_ENTRY_PARAMETERS; c++)
                 dataOfFile.remove(indexOfFile) ;
-                
-            
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath.toFile()), "CHARACTER_ENCODING"))) {  
+                                                                       
+            try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
                 for (int c = 0 ; c < dataOfFile.size() ; c++) {
                     writer.write(dataOfFile.get(c));
                     writer.newLine();
@@ -119,8 +113,8 @@ public class LoadAddressFile {
         }
     }
     public static void writeAddressInFileDefault(AddressEntry addressEntry){
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(AddressBook.PATH_ADDRESS_BOOK,StandardCharsets.UTF_8, true))) {
-    
+        Path path = Paths.get(PATH_ADDRESS_BOOK);
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, Files.exists(path) ? StandardOpenOption.APPEND : StandardOpenOption.CREATE)) {
             writer.write(addressEntry.getFirstName()); 
             writer.newLine();
             writer.write(addressEntry.getLastName()); 
@@ -139,6 +133,32 @@ public class LoadAddressFile {
             writer.newLine();
         } catch (IOException e) {
             System.err.println(Colors.CRITICAL_ERROR + "[Error al escribir en el archivo] " + e.getMessage()  + Colors.ANSI_RESET);
+        }
+    }
+    public static void addAddressFromFileDefault(ArrayList<AddressEntry> AddressEntryList) {
+        try {
+            
+            Path path = Paths.get(PATH_ADDRESS_BOOK);
+            try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+                AddressEntry addressEntryFile = new AddressEntry();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    LoadAddressFile.fillAddressEntry(addressEntryFile, line);
+                    if (LoadAddressFile.isAddressComplete(addressEntryFile)) {
+                        if (AddressBook.isValidAddressEntry(addressEntryFile)) {
+                            if (Collections.binarySearch(AddressEntryList, addressEntryFile) < 0)
+                                SortedArrayListAddress.addOrder(AddressEntryList, addressEntryFile);
+                            else
+                                System.out.println(Colors.ANSI_YELLOW + "¡Este contacto ya existe! El archivo contiene contactos duplicados. " + Colors.ANSI_RESET + addressEntryFile.toString());
+                        } else
+                            System.err.println(Colors.CRITICAL_ERROR + "[Parámetro inválido] " + Colors.ANSI_RESET + "El archivo contiene contactos donde algún campo no cumple con el formato adecuado. " + addressEntryFile.toString());
+                        addressEntryFile = new AddressEntry();
+                    }
+                }
+                System.out.println(Colors.ANSI_GREEN + "[AddressBook importado] " + Colors.ANSI_RESET + "Se importaron correctamente las direcciones.");
+            }
+        } catch (Exception e) {
+            System.out.println(Colors.CRITICAL_ERROR + "[Error al leer el archivo]" + Colors.ANSI_RESET + " " + e.getMessage());
         }
     }
 
