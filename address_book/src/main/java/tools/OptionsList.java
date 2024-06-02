@@ -1,41 +1,34 @@
 package tools;
+
 import java.util.ArrayList;
-import tools.*;
-// Buscar la forma de agregar un parametro size que sea usado como referencia al optionList.size();
+import java.util.Collections;
 import java.util.List;
 
 public class OptionsList {
 
-    private List<Option> optionList = new ArrayList<>() ;
-    
-    public OptionsList(Option... options) 
-    {
-        
-        for(Option option : options)
-        {
-            optionList.add(option) ;
-        }
+    private List<Option> optionsList = new ArrayList<>() ;
+    public static final char OPTION_INITIAL = 'a' ;
+
+    public OptionsList(Option... options){
+          Collections.addAll(optionsList, options);
     }
-    public void executeOption(int index) 
-    {
-        if (index >= 0 && index < optionList.size()) {
-            optionList.get(index).callback.run();
+    public void executeOption(int index){
+        if (index >= 0 && index < optionsList.size()) {
+            optionsList.get(index).execute();
         } else {
-            System.out.println("Opción no válida");
+            System.out.println(Colors.CRITICAL_ERROR + "Opción no válida" + Colors.ANSI_RESET);
         }
     }
-    /// agregar un get y set
-    public void displayOptions() 
-    {
+    
+    public void displayOptions(){
         System.out.println( Colors.ANSI_YELLOW +  "Selecciona una opción del menú" + Colors.ANSI_RESET);
-        char initialChar = 'a'; //Este otorgará el inicio de la numeración de las opciones.
-        for (char letra = initialChar; letra < initialChar + optionList.size(); letra++) {
-            System.out.println( Colors.ANSI_GREEN+ letra + ") " + Colors.ANSI_WHITE + optionList.get( letra - initialChar ) +  Colors.ANSI_RESET);
+       
+        for (char letra = OPTION_INITIAL; letra < OPTION_INITIAL + optionsList.size(); letra++){
+            System.out.println( Colors.ANSI_GREEN+ letra + ") " + Colors.ANSI_WHITE + optionsList.get( letra - OPTION_INITIAL ) +  Colors.ANSI_RESET);
         }
     }
 
-    public int size()
-    {
-        return optionList.size() ;
+    public int size(){
+        return optionsList.size() ;
     }
 }

@@ -1,21 +1,20 @@
 package tools;
 
 public class Colors {
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
-    /*
-        Color de letra (foreground)
-        Actualizar colores a 24 bits
-        \x1b[38;2;<R>;<G>;<B>m
-        Color de fondo (background)
-        \x1b[48;2;<R>;<G>;<B>m
-    */
+    public static final String ANSI_BOLD = "\u001B[1m";
+
+
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_YELLOW = "\u001B[38;2;245;213;99m";
+    public static final String ANSI_GREEN = "\u001B[38;2;111;178;9m";
+    public static final String ANSI_BLUE = "\u001B[38;2;32;155;255m";
+    public static final String ANSI_PURPLE = "\u001B[38;2;122;83;179m";
+    public static final String ANSI_WHITE = "\u001B[38;2;255;255;255m";
+
+    public static final String BG_RED = "\u001B[48;2;255;0;0m"; 
+
+    public static final String CRITICAL_ERROR = BG_RED +  ANSI_BOLD + ANSI_WHITE ;
+    
+
 }
