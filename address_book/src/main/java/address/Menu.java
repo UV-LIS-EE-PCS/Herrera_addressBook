@@ -10,9 +10,9 @@ import tools.OptionsList;
 public class Menu {
     
 
-    private Scanner input ;
-    private AddressBook addressList;
-    private final OptionsList optionsList;
+    public Scanner input ;
+    public AddressBook addressList;
+    final OptionsList optionsList;
 
     public Menu(){
         optionsList =  createOptionsList() ;
@@ -32,7 +32,7 @@ public class Menu {
     }
            
 
-    public void displayMenu()
+    void displayMenu()
     {
         while(true)
         {
@@ -47,37 +47,37 @@ public class Menu {
         }
     }
 
-    private boolean isValidOption(char option) {
+    boolean isValidOption(char option) {
         return option >= OptionsList.OPTION_INITIAL && option < OptionsList.OPTION_INITIAL + optionsList.size();
     }
   
-    private void loadFile(){
+    void loadFile(){
         System.out.println(Colors.ANSI_YELLOW + "Ingresa en la ventana desplegada y selecciona el archivo." + Colors.ANSI_RESET);
         addressList.addAddressFromFile() ;
     }
     
-    private void addAddress(){
+    void addAddress(){
         System.out.println(Colors.ANSI_YELLOW + "Ingresa los datos del contacto." + Colors.ANSI_RESET);
         AddressEntry addressEntry = readAddressEntry() ;
         addressList.addAddress(addressEntry);
     }
-    private void deleteAddress(){
+    void deleteAddress(){
         System.out.println(Colors.ANSI_YELLOW + "Ingrese algún campo del contacto que desea " + Colors.CRITICAL_ERROR+ "eliminar." + Colors.ANSI_RESET);
         String deletedString = input.nextLine() ; 
         addressList.deleteAddress(deletedString);
     }
 
-    private void searchAddress(){
+    void searchAddress(){
         System.out.println(Colors.ANSI_YELLOW + "Ingrese algún campo del contacto que desea" + Colors.ANSI_BLUE + " buscar." + Colors.ANSI_RESET);
         String searchString = input.nextLine() ; 
         addressList.searchAddress(searchString);
     }
-    private void showAllAddress(){
+    void showAllAddress(){
         System.out.println(Colors.ANSI_YELLOW + "Direcciones guardadas:" + Colors.ANSI_RESET);
         addressList.showAllAddress() ;
     }
     
-    private void exitMenu(){
+    void exitMenu(){
         System.exit(0);
     }
     

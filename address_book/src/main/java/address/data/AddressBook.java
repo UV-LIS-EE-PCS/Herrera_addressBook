@@ -16,8 +16,8 @@ import tools.SortedArrayListAddress;
  
 public class AddressBook{
 
-    private ArrayList<AddressEntry> AddressEntryList = new ArrayList<>() ;
-    private static AddressBook instance;
+    public ArrayList<AddressEntry> AddressEntryList = new ArrayList<>() ;
+    private static AddressBook instance = null;
     
     private AddressBook(){
         LoadAddressFile.addAddressFromFileDefault(AddressEntryList);
@@ -144,34 +144,51 @@ public class AddressBook{
 
             ArrayList<String> optionAnswered = new ArrayList<>();
             Scanner input = new Scanner(System.in, StandardCharsets.UTF_8) ;
-            Collections.addAll(optionAnswered, input.nextLine().split(" "));
-            switch (optionAnswered.get(0)){
-                case "Y":
-                    if(optionAnswered.size() > 1){
-                        optionAnswered.remove(0);
-                        Collections.sort(optionAnswered, Comparator.reverseOrder());
-                        for(String indexAddress : optionAnswered){
-                            if(Integer.parseInt(indexAddress) <= AddressEntryList.size() - 1){                       
-                                
-                                LoadAddressFile.saveAfterDelete(AddressEntryList.get(Integer.parseInt(indexAddress)));
-                                AddressEntryList.remove(Integer.parseInt(indexAddress));
+            while (true) {
+                System.out.print(Colors.ANSI_YELLOW + "Ingresa una opción válida: " + Colors.ANSI_RESET);
+                Collections.addAll(optionAnswered, input.nextLine().split(" "));
+                switch (optionAnswered.get(0)){
+                    case "Y":
+                        if(optionAnswered.size() > 1){
+                            optionAnswered.remove(0);
+                            Collections.sort(optionAnswered, Comparator.reverseOrder());
+                            
+                                try {
+                                    for(String indexAddress : optionAnswered){
+                                        if(Integer.parseInt(indexAddress) <= AddressEntryList.size() - 1){                       
+                                        
+                                            LoadAddressFile.saveAfterDelete(AddressEntryList.get(Integer.parseInt(indexAddress)));
+                                            AddressEntryList.remove(Integer.parseInt(indexAddress));
+
+                                        }
+                                        else 
+                                        System.err.println(Colors.CRITICAL_ERROR + "[Parámetro inválido]" + Colors.ANSI_RESET + " " +  indexAddress + " ¡No pertenece a ningún registro!");   
+                                    }
+                                    return;
+                                    
+                                } catch (Exception e) {
+                                    System.err.println(Colors.CRITICAL_ERROR + "[Parámetro inválido]" + Colors.ANSI_RESET  + " ¡Ingresa una pción válida!");   
+                                }
+                            
+                        }
+                        else if(optionAnswered.size() == 1){                           
+                            Collections.sort(addressFound, Comparator.reverseOrder());
+                            try {
+                                for(Integer indexAddress : addressFound){
+                                    LoadAddressFile.saveAfterDelete(AddressEntryList.get((int)(indexAddress))); 
+                                    AddressEntryList.remove((int)indexAddress);   
+                                }
+                                return;
+                            } catch (Exception e) {
+                                System.err.println(Colors.CRITICAL_ERROR + "[Parámetro inválido]" + Colors.ANSI_RESET  + " ¡Ingresa una pción válida!");   
                             }
-                            else 
-                                System.err.println(Colors.CRITICAL_ERROR + "[Parámetro inválido]" + Colors.ANSI_RESET + " " +  indexAddress + " ¡No pertenece a ningún registro!");   
                         }
+                        break;
+                    case "N":
+                        System.out.println(Colors.CRITICAL_ERROR + "[Operación cancelada]" + Colors.ANSI_RESET + " Se seleccionó cancelar la operación");
+                    default:
+                        System.out.println(Colors.CRITICAL_ERROR + "[Operación inválida]" + Colors.ANSI_RESET + " Se seleccionó una opción invalida."); /*  */
                     }
-                    else if(optionAnswered.size() == 1){                           
-                        Collections.sort(addressFound, Comparator.reverseOrder());
-                        for(Integer indexAddress : addressFound){
-                            LoadAddressFile.saveAfterDelete(AddressEntryList.get((int)(indexAddress))); 
-                            AddressEntryList.remove((int)indexAddress);   
-                        }
-                    }
-                    break;
-                case "N":
-                    System.out.println(Colors.CRITICAL_ERROR + "[Operación cancelada]" + Colors.ANSI_RESET + " Se seleccionó cancelar la operación");
-                default:
-                    System.out.println(Colors.CRITICAL_ERROR + "[Operación cancelada]" + Colors.ANSI_RESET + " Se seleccionó una opción invalida.");
                 }
         }
         else
