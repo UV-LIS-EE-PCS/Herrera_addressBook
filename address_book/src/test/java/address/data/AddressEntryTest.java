@@ -1,26 +1,37 @@
 package address.data;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Test;
 
 public class AddressEntryTest {
+    /*
+        Algunas pruebas presentes en esta clase no considero viable verificar más de una vez, las
+        cadenas normalizadas se comportarán de la misma manera sin importar el contenido.
+     */
     AddressEntry firstEntry = new AddressEntry("Primera entrada", "Primera entrada única para pruebas", "Antigua", "Coatzacoalcos", "Veracruz", "96536", "primero@gmail.com", "9211111111" );
-    AddressEntry secondfirstEntry = new AddressEntry("Segunda entrada", "Segunda entrada única para pruebas", "Antigua", "Coatzacoalcos", "Veracruz", "96536", "segundo@gmail.com", "9212222222" );
-
+    AddressEntry secondEntry = new AddressEntry("Segunda entrada", "Segunda entrada única para pruebas", "Antigua", "Coatzacoalcos", "Veracruz", "96536", "segundo@gmail.com", "9212222222" );
+    AddressEntry cloneFirstEntry = new AddressEntry("PrImErA eNtRaDa", "PrImErA eNtRaDa ÚnIcA pArA pRuEbAs", "AnTiGuA", "CoAtZaCoAlCoS", "VeRaCrUz", "96536", "PrImErO@gMaIl.CoM", "9211111111");
     @Test
-    public void testCompareToWithDifferentEntries() { // checar
-        
-        assertNotEquals(0, firstEntry.compareTo(secondfirstEntry));
-        assertEquals(0, firstEntry.compareTo(firstEntry));
+    public void testCompareToDifferentEntries() {
+        assertTrue(firstEntry.compareTo(secondEntry) < 0); // firstEntry es menor lexicograficamente, devuelve un valor negativo
+        assertTrue(secondEntry.compareTo(firstEntry) > 0); // secondEntry es mayor lexicograficamente, devuelve un valor positivo
     }
 
     @Test
-    public void testGetAndSetFirstName() {
-        
-        firstEntry.setFirstName("Samuel");
+    public void testCompareToSameEntry() {
+        assertEquals(0, firstEntry.compareTo(firstEntry)); 
+    }
 
+    @Test
+    public void testCompareToIgnoreCase() {
+        
+        assertEquals(0, firstEntry.compareTo(cloneFirstEntry));
+    }
+    @Test
+    public void testGetAndSetFirstName() {
+        firstEntry.setFirstName("Samuel");
         assertEquals("Samuel", firstEntry.getFirstName());
     }
 

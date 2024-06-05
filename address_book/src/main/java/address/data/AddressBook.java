@@ -14,21 +14,39 @@ import tools.Colors;
 import tools.LoadAddressFile;
 import tools.SortedArrayListAddress;
  
+/**
+ * La clase AddressBook representa un libro de direcciones que contiene una lista de entradas de dirección.
+ * Permite agregar, eliminar, buscar y mostrar entradas de dirección, así como cargar y guardar datos desde un archivo.
+*/
 public class AddressBook{
 
+    /** Lista que contiene todas las entradas de dirección en el libro de direcciones. */
     public ArrayList<AddressEntry> AddressEntryList = new ArrayList<>() ;
+    /** Instancia que me permite mantener un único libro de direcciones. */
     private static AddressBook instance = null;
     
+    /**
+     * Constructor privado para evitar la creación de instancias directas de AddressBook.
+     * Carga las direcciones desde el archivo predeterminado al inicializar el libro de direcciones.
+    */
     private AddressBook(){
         LoadAddressFile.addAddressFromFileDefault(AddressEntryList);
     }
     
+     /**
+     * Obtiene la instancia única del libro de direcciones, con el fin de cumplir el patrón de diseño Singleton.
+     * @return La instancia única del libro de direcciones.
+    */
     public static synchronized AddressBook getInstance(){
         if(instance == null)
             instance = new AddressBook() ;
         return instance ;
     }
     
+    /**
+     * Agrega direcciones almecenandolo en {@link AddressEntryList} desde un archivo seleccionado por el usuario desde una ventana desplegada del explorador de archivos.
+     * Muestra un mensaje de error si el archivo no es un txt file.
+    */
     public void addAddressFromFile(){
         
         String  filePath = LoadAddressFile.loadFileFromExplorer() ; 
@@ -72,6 +90,11 @@ public class AddressBook{
             System.out.println(Colors.CRITICAL_ERROR + "[Operación cancelada]" +  Colors.ANSI_RESET + " No se seleccionó un archivo.");
     }
    
+    /**
+     * Agrega una nueva entrada de dirección al libro de direcciones. 
+     * Este método llama al método para la escritura de direcciones en el archivo de texto designado.
+     * @param addressEntry La entrada de dirección a agregar a la lista {@link AddressEntryList}.
+    */
     public void addAddress(AddressEntry addressEntry){   
         
         
@@ -87,8 +110,9 @@ public class AddressBook{
             System.out.println(Colors.CRITICAL_ERROR + "[Parámetro inválido]" + Colors.ANSI_RESET + " Algún campo no cumple con el formato adecuado.");
     }
 
-
-
+    /**
+     * Muestra en consola todas las entradas de dirección almacenadas en {@link AddressEntryList}el libro de direcciones con todos los campos.
+    */
     public void showAllAddress(){
         
         if(AddressEntryList.size() > 0){
@@ -108,7 +132,11 @@ public class AddressBook{
             System.out.println(Colors.CRITICAL_ERROR + "[No se encontraron resultados]" + Colors.ANSI_RESET +  " No hay contactos que mostrar.");
     }
 
-
+    /**
+     * Busca las entradas de dirección guardadas en {@link AddressEntryList} que contienen una cadena de búsqueda basada en los apellidos.
+     * @param searchString El apellido ocupado como cadena de búsqueda.
+     * @return Una lista de índices de las entradas de dirección encontradas que cumplen el estándar de búsqueda.
+    */
     public ArrayList<Integer> searchAddress(String searchString){
     
         ArrayList<Integer> addressFound = new ArrayList<>() ;
@@ -133,6 +161,11 @@ public class AddressBook{
         return addressFound ;
     }
 
+    /**
+     * Elimina las entradas de dirección guardadas en {@link AddressEntryList} que contienen una cadena de búsqueda basada en los apellidos y que fueron seleccionadas por el usuario.
+     * Permite al usuario seleccionar las entradas a eliminar, ofrece la opción de eliminar todas o cancelar la operación.
+     * @param deletedString La cadena de búsqueda para identificar las entradas a eliminar.
+    */
     public void deleteAddress(String deletedString){
 
        
@@ -195,6 +228,12 @@ public class AddressBook{
             System.out.println(Colors.CRITICAL_ERROR + "[No se encontraron resultados]" + Colors.ANSI_RESET +  " No hay contactos que mostrar.");
     }
 
+    /**
+     * Verifica si una entrada de dirección es válida.
+     * Una entrada de dirección se considera válida si todos sus campos tienen al menos un carácter.
+     * @param addressEntry La entrada de dirección a verificar.
+     * @return true si la entrada de dirección es válida, false de lo contrario.
+    */
     public static boolean isValidAddressEntry(AddressEntry addressEntry){
         if(addressEntry.getFirstName().length() < 1 || addressEntry.getLastName().length() < 1 || addressEntry.getStreet().length() < 1 && 
         addressEntry.getCity().length() < 1 || addressEntry.getState().length() < 1 || addressEntry.getPostalCode().length() < 1 &&

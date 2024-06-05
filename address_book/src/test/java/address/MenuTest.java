@@ -18,13 +18,15 @@ import static org.mockito.Mockito.verify;
 public class MenuTest {
 
     /*
-        Algunas pruebas fueron omitidas por la complejidad que resulta hacerlas, en caso de hacerlas considero que serían pruebas a ciegas, ya que no
+        - Algunas pruebas fueron omitidas o no fueron completadas por la complejidad que resulta hacerlas, en caso de hacerlas considero que serían pruebas a ciegas, ya que no
         entendería a completitud la complejidad detrás de este. 
-        Algunas pruebas estarán marcadas con comentarios, ya que se quedaron en solo intentos, pero por desconocimiento no encuentro la manera correcta de hacerlas.
-        Algunas pruebas fueron omitidas por el determinismo de estas sin importar la entrada.
+        - Algunas pruebas estarán marcadas con comentarios, ya que se quedaron en solo intentos, pero por desconocimiento no encuentro la manera correcta de hacerlas.
+        - Algunas pruebas fueron omitidas por el determinismo de estas sin importar la entrada.
+        - Considerar que solo son llamadas, nos interesa que llamaron a los métodos, esos métodos llamados ya fueron testeados en otras secciones.
     */
     private Menu menu;
     private AddressBook addressBookMock;
+    public static final char OPTION_INITIAL = 'a' ;
     
     @BeforeEach
     void setUp() {
@@ -35,14 +37,14 @@ public class MenuTest {
 
     @Test
     void testIsValidOptionValid() {
-        for (int indexOfOptions = 'a' ; indexOfOptions < 'a' + menu.optionsList.size() ; indexOfOptions++) {
+        for (int indexOfOptions = OPTION_INITIAL ; indexOfOptions < OPTION_INITIAL + menu.optionsList.size() ; indexOfOptions++) {
             assertTrue(menu.isValidOption((char) indexOfOptions));
         }
         
     }
     @Test
     void testIsValidOptionInvalid() {
-        for (int indexOfOptions = 'a' + menu.optionsList.size() ; indexOfOptions < 'a' + menu.optionsList.size() * 2; indexOfOptions++) {
+        for (int indexOfOptions = OPTION_INITIAL + menu.optionsList.size() ; indexOfOptions < OPTION_INITIAL + menu.optionsList.size() * 2; indexOfOptions++) {
         assertFalse(menu.isValidOption((char) indexOfOptions));
         }
     }

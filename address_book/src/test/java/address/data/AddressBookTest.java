@@ -22,7 +22,7 @@ public class AddressBookTest {
     AddressEntry firstEntry = new AddressEntry("Primera entrada", "Primera entrada única para pruebas", "Antigua", "Coatzacoalcos", "Veracruz", "96536", "primero@gmail.com", "9211111111" );
     AddressEntry secondEntry = new AddressEntry("Segunda entrada", "Segunda entrada única para pruebas", "Antigua", "Coatzacoalcos", "Veracruz", "96536", "segundo@gmail.com", "9212222222" );
     @Before
-    public void  initialize(){
+    public void  setUp(){
         addressBook = AddressBook.getInstance() ;
     }
    @Test

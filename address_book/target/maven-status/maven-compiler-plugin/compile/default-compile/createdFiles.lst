@@ -1,9 +1,0 @@
-address\Menu.class
-address\AddressBookApplication.class
-tools\OptionsList.class
-tools\LoadAddressFile.class
-address\data\AddressBook.class
-tools\Option.class
-tools\SortedArrayListAddress.class
-address\data\AddressEntry.class
-tools\Colors.class
