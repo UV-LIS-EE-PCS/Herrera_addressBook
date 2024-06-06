@@ -32,7 +32,7 @@ public class MenuTest {
     void setUp() {
         addressBookMock = Mockito.mock(AddressBook.class);
         menu = new Menu();
-        menu.addressList = addressBookMock;
+        menu.addressBook = addressBookMock;
     }
 
     @Test

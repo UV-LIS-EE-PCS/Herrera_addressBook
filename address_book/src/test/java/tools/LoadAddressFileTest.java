@@ -16,7 +16,7 @@ public class LoadAddressFileTest {
     @Test
     public void testLoadFileFromExplorer() {
        
-        String selectedFile = LoadAddressFile.loadFileFromExplorer();
+        String selectedFile = LoadAddressFile.selectFileFromDialog();
 
         assertTrue(selectedFile.contains(PATH_ADDRESS_BOOK_TEST)); // <- Este es importante usar el de la misma ruta, el contains es para considerar lo relativo.
     }

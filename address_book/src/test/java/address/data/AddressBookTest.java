@@ -90,6 +90,7 @@ public class AddressBookTest {
 
         ArrayList<Integer> resultsAfterDeletion = addressBook.searchAddress(firstEntry.getLastName());
         assertTrue(resultsAfterDeletion.isEmpty());
+        assertEquals(resultsAfterDeletion.size(),resultsBeforeDeletion.size() - 1);
         System.setIn(originalIn);
     }
 
@@ -102,12 +103,11 @@ public class AddressBookTest {
         InputStream originalIn = System.in;
         System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
         ArrayList<Integer> resultsBeforeDeletion = addressBook.searchAddress(secondEntry.getLastName());
-        assertFalse(resultsBeforeDeletion.isEmpty());
-
-        addressBook.deleteAddress(secondEntry.getLastName());
         
+
+        addressBook.deleteAddress(secondEntry.getLastName());        
         ArrayList<Integer> resultsAfterDeletion = addressBook.searchAddress(secondEntry.getLastName());
-        assertFalse(resultsAfterDeletion.isEmpty());
+        assertEquals(resultsAfterDeletion.size(),resultsBeforeDeletion.size() );
         System.setIn(originalIn);
     }
 

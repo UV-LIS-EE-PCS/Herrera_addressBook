@@ -28,7 +28,7 @@ public class AddressEntry implements Comparable<AddressEntry>{
     private String phoneNumber;
     
     /**
-     * Constructor por defecto de AddressEntry, pero público.
+     * Constructor vacío por defecto de AddressEntry, pero público.
      */
     public AddressEntry(){
     }

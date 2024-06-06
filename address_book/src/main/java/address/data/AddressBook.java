@@ -30,7 +30,7 @@ public class AddressBook{
      * Carga las direcciones desde el archivo predeterminado al inicializar el libro de direcciones.
     */
     private AddressBook(){
-        LoadAddressFile.addAddressFromFileDefault(AddressEntryList);
+        LoadAddressFile.importAddressesFromDefaultFile(AddressEntryList);
     }
     
      /**
@@ -49,7 +49,7 @@ public class AddressBook{
     */
     public void addAddressFromFile(){
         
-        String  filePath = LoadAddressFile.loadFileFromExplorer() ; 
+        String  filePath = LoadAddressFile.selectFileFromDialog() ; 
         System.out.println(filePath == null);
         if(filePath != null){
             try {
@@ -101,7 +101,7 @@ public class AddressBook{
         if(isValidAddressEntry(addressEntry) == true){
             if(Collections.binarySearch(AddressEntryList, addressEntry) < 0){
                 SortedArrayListAddress.addOrder(AddressEntryList, addressEntry);
-                LoadAddressFile.writeAddressInFileDefault(addressEntry);
+                LoadAddressFile.saveAddressToDefaultFile(addressEntry);
             }
             else 
                 System.out.println( Colors.ANSI_YELLOW + "¡Este contacto ya existe! " + Colors.ANSI_RESET +addressEntry.toString());
@@ -190,7 +190,7 @@ public class AddressBook{
                                     for(String indexAddress : optionAnswered){
                                         if(Integer.parseInt(indexAddress) <= AddressEntryList.size() - 1){                       
                                         
-                                            LoadAddressFile.saveAfterDelete(AddressEntryList.get(Integer.parseInt(indexAddress)));
+                                            LoadAddressFile.updateFileAfterDelete(AddressEntryList.get(Integer.parseInt(indexAddress)));
                                             AddressEntryList.remove(Integer.parseInt(indexAddress));
 
                                         }
@@ -208,7 +208,7 @@ public class AddressBook{
                             Collections.sort(addressFound, Comparator.reverseOrder());
                             try {
                                 for(Integer indexAddress : addressFound){
-                                    LoadAddressFile.saveAfterDelete(AddressEntryList.get((int)(indexAddress))); 
+                                    LoadAddressFile.updateFileAfterDelete(AddressEntryList.get((int)(indexAddress))); 
                                     AddressEntryList.remove((int)indexAddress);   
                                 }
                                 return;
@@ -217,8 +217,10 @@ public class AddressBook{
                             }
                         }
                         break;
-                    case "N":
+                    case "N":{
                         System.out.println(Colors.CRITICAL_ERROR + "[Operación cancelada]" + Colors.ANSI_RESET + " Se seleccionó cancelar la operación");
+                        return;
+                    }
                     default:
                         System.out.println(Colors.CRITICAL_ERROR + "[Operación inválida]" + Colors.ANSI_RESET + " Se seleccionó una opción invalida."); /*  */
                     }
@@ -235,9 +237,15 @@ public class AddressBook{
      * @return true si la entrada de dirección es válida, false de lo contrario.
     */
     public static boolean isValidAddressEntry(AddressEntry addressEntry){
-        if(addressEntry.getFirstName().length() < 1 || addressEntry.getLastName().length() < 1 || addressEntry.getStreet().length() < 1 && 
-        addressEntry.getCity().length() < 1 || addressEntry.getState().length() < 1 || addressEntry.getPostalCode().length() < 1 &&
-        addressEntry.getEmail().length() < 1 || addressEntry.getPhoneNumber().length() < 1)
+        if(addressEntry.getFirstName().length() < 1 || 
+            addressEntry.getLastName().length() < 1 || 
+            addressEntry.getStreet().length() < 1 || 
+            addressEntry.getCity().length() < 1 || 
+            addressEntry.getState().length() < 1 || 
+            addressEntry.getPostalCode().length() < 1 ||
+            addressEntry.getEmail().length() < 1 || 
+            addressEntry.getPhoneNumber().length() < 1
+        )
             return false;
 
         return true;

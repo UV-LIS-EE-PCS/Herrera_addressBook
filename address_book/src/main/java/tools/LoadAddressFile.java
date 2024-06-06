@@ -41,7 +41,7 @@ public class LoadAddressFile {
      * Método que abre un diálogo de selección de archivos para que el usuario seleccione un archivo de direcciones.
      * @return La ruta del archivo seleccionado.
     */
-    public static String loadFileFromExplorer(){
+    public static String selectFileFromDialog(){
         FileDialog fileDialog = new FileDialog(new Frame(), "Selecciona el archivo de direcciones.", FileDialog.LOAD); 
         fileDialog.setAlwaysOnTop(true);
         fileDialog.setVisible(true);
@@ -102,7 +102,7 @@ public class LoadAddressFile {
      * Usa {@link NUMBER_OF_ADDRESS_ENTRY_PARAMETERS} para saber cuántas veces eliminará un número de linea. .
      * @param addressEntryDelete La entrada de dirección eliminada.
     */
-    public static void saveAfterDelete(AddressEntry addressEntryDelete){
+    public static void updateFileAfterDelete(AddressEntry addressEntryDelete){
         Path path = Paths.get(PATH_ADDRESS_BOOK);
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line;
@@ -144,9 +144,9 @@ public class LoadAddressFile {
      * Método que guarda las modificaciones después de agregar una entrada de dirección al archivo.
      * @param addressEntryAdd La entrada de dirección agregada.
     */
-    public static void saveAfterAdd(AddressEntry addressEntryAdd) {
+    public static void updateFileWithNewEntry(AddressEntry addressEntryAdd) {
         try{
-            writeAddressInFileDefault(addressEntryAdd);
+            saveAddressToDefaultFile(addressEntryAdd);
         }
         catch (Exception e) {
             System.err.println(Colors.CRITICAL_ERROR +"[Error al escribir en el archivo] " + e.getMessage() + Colors.ANSI_RESET);
@@ -157,7 +157,7 @@ public class LoadAddressFile {
      * Método que escribe una entrada de dirección en el archivo de direcciones por defecto.
      * @param addressEntry La entrada de dirección a escribir en el archivo.
     */
-    public static void writeAddressInFileDefault(AddressEntry addressEntry){
+    public static void saveAddressToDefaultFile(AddressEntry addressEntry){
         Path path = Paths.get(PATH_ADDRESS_BOOK);
         try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, Files.exists(path) ? StandardOpenOption.APPEND : StandardOpenOption.CREATE)) {
             writer.write(addressEntry.getFirstName()); 
@@ -185,7 +185,7 @@ public class LoadAddressFile {
      * Método que agrega entradas de dirección desde el archivo de direcciones por defecto a la lista de entradas {@link AddressBook#AddressEntryList}.
      * @param AddressEntryList La lista de entradas de dirección.
     */
-    public static void addAddressFromFileDefault(ArrayList<AddressEntry> AddressEntryList) {
+    public static void importAddressesFromDefaultFile(ArrayList<AddressEntry> AddressEntryList) {
         try {
             
             Path path = Paths.get(PATH_ADDRESS_BOOK);

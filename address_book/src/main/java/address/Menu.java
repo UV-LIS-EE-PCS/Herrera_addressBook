@@ -15,13 +15,15 @@ import tools.OptionsList;
 */
 public class Menu {
     
-    /** Escáner para leer la entrada del usuario. */
-    public Scanner input ;
     /** Instancia del libro de direcciones. */
-    public AddressBook addressList;
+    public AddressBook addressBook;
+  
     /** Lista de opciones disponibles en el menú. */
     final OptionsList optionsList;
-
+  
+    /** Escáner para leer la entrada del usuario. */
+    public Scanner input ;
+  
     /**
      * Constructor de la clase Menu.
      * Ejecuta el método de inicialización las opciones disponibles para el menú
@@ -30,7 +32,7 @@ public class Menu {
     */
     public Menu(){
         optionsList =  createOptionsList() ;
-        addressList = AddressBook.getInstance();
+        addressBook = AddressBook.getInstance();
         input = new Scanner(System.in, "UTF-8") ;
     }
 
@@ -82,7 +84,7 @@ public class Menu {
     */
     void loadFile(){
         System.out.println(Colors.ANSI_YELLOW + "Ingresa en la ventana desplegada y selecciona el archivo." + Colors.ANSI_RESET);
-        addressList.addAddressFromFile() ;
+        addressBook.addAddressFromFile() ;
     }
     /**
      * Método para solicitar la adición de una nueva dirección.
@@ -91,7 +93,7 @@ public class Menu {
     void addAddress(){
         System.out.println(Colors.ANSI_YELLOW + "Ingresa los datos del contacto." + Colors.ANSI_RESET);
         AddressEntry addressEntry = readAddressEntry() ;
-        addressList.addAddress(addressEntry);
+        addressBook.addAddress(addressEntry);
     }
     /**
      * Método para eliminar una dirección.
@@ -100,7 +102,7 @@ public class Menu {
     void deleteAddress(){
         System.out.println(Colors.ANSI_YELLOW + "Ingrese el apellido del contacto que desea " + Colors.CRITICAL_ERROR+ "eliminar." + Colors.ANSI_RESET);
         String deletedString = input.nextLine() ; 
-        addressList.deleteAddress(deletedString);
+        addressBook.deleteAddress(deletedString);
     }
 
     /**
@@ -110,7 +112,7 @@ public class Menu {
     void searchAddress(){
         System.out.println(Colors.ANSI_YELLOW + "Ingrese el apellido del contacto que desea" + Colors.ANSI_BLUE + " buscar." + Colors.ANSI_RESET);
         String searchString = input.nextLine() ; 
-        addressList.searchAddress(searchString);
+        addressBook.searchAddress(searchString);
     }
 
     /**
@@ -118,7 +120,7 @@ public class Menu {
      */
     void showAllAddress(){
         System.out.println(Colors.ANSI_YELLOW + "Direcciones guardadas:" + Colors.ANSI_RESET);
-        addressList.showAllAddress() ;
+        addressBook.showAllAddress() ;
     }
     /**
      * Método para salir del menú, permite la finalización del programa.
