@@ -50,7 +50,7 @@ public class AddressBook{
     public void addAddressFromFile(){
         
         String  filePath = LoadAddressFile.selectFileFromDialog() ; 
-        System.out.println(filePath == null);
+        
         if(filePath != null){
             try {
                 File importFile = new File(filePath) ;
@@ -59,13 +59,17 @@ public class AddressBook{
                     if(filePath.endsWith(".txt")){
                         AddressEntry addressEntryFile = new AddressEntry();
                         String line ;
+                        int numberOfLines = 0;
                         while((line = reader.readLine()) != null){
+                            numberOfLines ++;
                             LoadAddressFile.fillAddressEntry(addressEntryFile, line);
 
                             if(LoadAddressFile.isAddressComplete(addressEntryFile)){         
                                 if(isValidAddressEntry(addressEntryFile)){
-                                    if(Collections.binarySearch(AddressEntryList, addressEntryFile) < 0)    
+                                    if(Collections.binarySearch(AddressEntryList, addressEntryFile) < 0){
                                         SortedArrayListAddress.addOrder(AddressEntryList, addressEntryFile); 
+                                        LoadAddressFile.updateFileWithNewEntry(addressEntryFile) ;
+                                    }
                                     else 
                                         System.out.println( Colors.ANSI_YELLOW + "¡Este contacto ya existe! " + Colors.ANSI_RESET +addressEntryFile.toString());
                                 }
@@ -74,6 +78,8 @@ public class AddressBook{
                                 addressEntryFile = new AddressEntry();
                             }
                         }
+                        if(numberOfLines % 8 != 0)
+                            System.err.println(Colors.CRITICAL_ERROR + "[Entrada inmpletada]" + Colors.ANSI_RESET + " Uno o varios campos no fueron definidos " );   
                     }
                     else{
                         System.err.println(Colors.CRITICAL_ERROR + "[Parámetro inválido]" + Colors.ANSI_RESET + " No se seleccionó un documento de texto. " );   
@@ -141,7 +147,7 @@ public class AddressBook{
     
         ArrayList<Integer> addressFound = new ArrayList<>() ;
         int index = 0;
-        
+        boolean isThereOneFound = false ;
         for(AddressEntry addressEntry : AddressEntryList){
             if(addressEntry.getLastName().contains(searchString)){
                 System.out.println(
@@ -152,11 +158,11 @@ public class AddressBook{
                     addressEntry.getPhoneNumber() + '\n' + Colors.ANSI_RESET
                 );
                 addressFound.add((Integer)index) ;
-                
+                isThereOneFound = true;
             } 
             index ++;
         }
-        if(index == 0)
+        if(isThereOneFound == false)
             System.out.println(Colors.CRITICAL_ERROR + "[No se encontraron resultados]" + Colors.ANSI_RESET +  " No hay contactos que mostrar.");
         return addressFound ;
     }
